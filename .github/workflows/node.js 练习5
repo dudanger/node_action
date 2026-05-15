@@ -1,0 +1,44 @@
+name: Complete CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:          # 允许手动触发
+
+jobs:
+  test:
+    name: Test on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+      - name: Run tests
+        run: npm test
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-node-${{ matrix.node-version }}
+          path: test-results.json
+        if: always()   # 即使测试失败也上传报告
+
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    needs: test
+    # 只有在 main 分支并且所有测试都成功时才运行
+    if: github.ref == 'refs/heads/main' && success()
+    steps:
+      - name: Deploy simulation
+        run: |
+          echo "Deploying to production..."
+          echo "All tests passed on Node 18 and 20."
