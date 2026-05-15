@@ -22,4 +22,3 @@ jobs:
           # cache: 'npm'                     # 👈 自动缓存 npm 依赖
       - run: npm install
       - run: npm test
-      - run: npm index
