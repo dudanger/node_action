@@ -1,0 +1,27 @@
+name: node.js 练习4 CI with cache and manual trigger
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:     # 👈 添加这一行，允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'          # 👈 启用缓存
+      - run: npm ci             # 👈 使用 npm ci（需要 lock 文件）
+      - run: npm test
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.json
+        if: always()
