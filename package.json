@@ -2,7 +2,6 @@
   "name": "simple-node-ci",
   "version": "1.0.0",
   "scripts": {
-    "test": "node test.js",
-    "index": "node index.js"
+    "test": "node test.js"
   }
 }
