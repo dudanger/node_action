@@ -19,6 +19,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'                     # 👈 自动缓存 npm 依赖
-      - run: npm ci
+      - run: npm install
       - run: npm test
       - run: npm index
