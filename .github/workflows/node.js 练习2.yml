@@ -9,9 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    #strategy:
-      # matrix:
-       # node-version: [18.x, 20.x, 22.x]   # 👈 同时测试这三个版本
+    strategy:
+       matrix:
+        node-version: [18.x, 20.x, 22.x]   # 👈 同时测试这三个版本
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
