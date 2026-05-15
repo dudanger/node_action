@@ -1,4 +1,4 @@
-name: .github/workflows/node.js 练习2.yml
+name: node.js 练习2.yml
 
 on:
   push:
