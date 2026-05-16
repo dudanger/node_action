@@ -1,0 +1,61 @@
+name: Multi Environments
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  QA-deploy:
+    runs-on: ubuntu-latest
+    environment: QA
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GA169 }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'QA-deploy SSH connection successful'"
+        
+  STG-deploy:
+    runs-on: ubuntu-latest
+    environment: STG
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GA169 }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'STG SSH connection successful'"
+
+  PROG-deploy:
+    runs-on: ubuntu-latest
+    environment: PROG
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GA169 }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'PROG SSH connection successful'"
+      
+
+      
