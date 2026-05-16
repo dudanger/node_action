@@ -1,8 +1,15 @@
-const assert = require('assert');
-const greet = require('./index');
+const http = require('http');
 
-// 测试用例
-assert.strictEqual(greet('Node'), 'Hello, Node!');
-assert.strictEqual(greet(''), 'Hello, !');
+const server = http.createServer((request, response) => {
+    response.statusCode = 200;
+    response.setHeader('Content-Type', 'application/json');
 
-console.log('✅ 所有测试通过！');
+    const greeting = { content: 'Hello, World!' };
+
+    response.write(JSON.stringify(greeting));
+    response.end();
+});
+
+server.listen(3000, () => {
+    console.log('Server running at http://localhost:3000');
+});
