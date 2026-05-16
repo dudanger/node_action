@@ -22,8 +22,8 @@ jobs:
 
       - name: Test SSH connection
         run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'QA-deploy SSH connection successful'"
-        // 实际使用中, 把 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 替换为后台 Environments 设置好的变量 ${{ vars.USER }}@${{ vars.IP_ADDR }} 
-        //不同的环境, 分配不同的变量. secrets 中的变量被加密, vars变量明文传输, 重要的变量放在 secrets 中.
+        # 实际使用中, 把 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 替换为后台 Environments 设置好的变量 ${{ vars.USER }}@${{ vars.IP_ADDR }} 
+        # 不同的环境, 分配不同的变量. secrets 中的变量被加密, vars变量明文传输, 重要的变量放在 secrets 中.
         
   STG-deploy:
     runs-on: ubuntu-latest
