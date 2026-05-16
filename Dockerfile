@@ -17,4 +17,5 @@ COPY . .
 EXPOSE 3000
 
 # 启动应用
-CMD ["node", "test1.js"]   # 确保 test1.js 是你的入口文件
+# 确保 test1.js 是你的入口文件
+CMD ["node", "test1.js"]
