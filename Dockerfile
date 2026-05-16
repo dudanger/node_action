@@ -22,5 +22,8 @@ EXPOSE 3000
 # 启动应用
 # 确保 test1.js 是你的入口文件
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  
 #CMD ["node", "test1.js"]
 CMD ["pm2-runtime", "start", "test1.js", "--name", "node-action"]

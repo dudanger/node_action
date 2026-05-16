@@ -7,6 +7,8 @@ app.get('/', (req, res) => {
     res.send('Hello from Docker!');
 });
 
+app.get('/health', (req, res) => res.send('OK'));
+
 // 关键：监听 0.0.0.0，且永不退出
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
