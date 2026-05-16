@@ -21,7 +21,7 @@ jobs:
           ssh-keyscan -H ${{ vars.IP_ADDRESS }} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
-        run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ env.IP_ADDRESS }} "echo 'QA-deploy SSH connection successful'"
+        run: ssh -o StrictHostKeyChecking=yes ${{ secrets.VPS_USER }}@${{ vars.IP_ADDRESS }} "echo 'QA-deploy SSH connection successful'"
         # 实际使用中, 把 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} 替换为后台 Environments 设置好的变量 ${{ env.USER }}@${{ env.IP_ADDR }} 
         # 不同的环境, 分配不同的变量. secrets 中的变量被加密, env变量明文传输, 重要的变量放在 secrets 中.
         
