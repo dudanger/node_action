@@ -1,0 +1,49 @@
+name: Build and Push to GHCR-test 2
+
+on:
+  push:
+    branches: [ main ]   # 推送到 main 分支触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write      # 允许推送到 GHCR
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 登录 GHCR
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 构建镜像并推送到 GHCR
+      - name: Build and push
+        run: |
+          REPO_LOWERCASE=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME=ghcr.io/${REPO_LOWERCASE}/my-app:latest
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+      # 自动 SSH 到服务器并部署
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}          # 服务器 IP（明文，建议用 secret）
+          username: ${{ secrets.SERVER_USER }}     # SSH 用户名（如 root）
+          key: ${{ secrets.SSH_PRIVATE_KEY }}      # SSH 私钥（内容）
+          script: |
+            set -e
+            echo "登录成功，开始部署..."
+            docker pull ${{ env.IMAGE_NAME }}
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d --name my-app -p 3000:3000 --restart unless-stopped ${{ env.IMAGE_NAME }}
+            echo "部署完成"
