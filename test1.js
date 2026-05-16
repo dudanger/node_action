@@ -1,15 +1,13 @@
-const http = require('http');
+const express = require('express');
+const app = express();
+const PORT = 3000;
 
-const server = http.createServer((request, response) => {
-    response.statusCode = 200;
-    response.setHeader('Content-Type', 'application/json');
-
-    const greeting = { content: 'Hello, World!' };
-
-    response.write(JSON.stringify(greeting));
-    response.end();
+// 一个简单路由
+app.get('/', (req, res) => {
+    res.send('Hello from Docker!');
 });
 
-server.listen(3030, () => {
-    console.log('Server running at http://localhost:3030');
+// 关键：监听 0.0.0.0，且永不退出
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
