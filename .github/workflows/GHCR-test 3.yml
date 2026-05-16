@@ -1,0 +1,58 @@
+name: Build and Push to GHCR-test 3
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push versioned images
+        id: docker_build
+        run: |
+          # 转换为小写（GHCR 要求）
+          REPO_LOWERCASE=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          # 获取当前 commit 的短哈希（前7位）
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+          # 基础镜像名
+          IMAGE_BASE=ghcr.io/${REPO_LOWERCASE}/my-app
+
+          # 构建并打两个标签：latest 和 commit-sha
+          docker build -t ${IMAGE_BASE}:latest -t ${IMAGE_BASE}:${SHORT_SHA} .
+
+          # 推送两个标签
+          docker push ${IMAGE_BASE}:latest
+          docker push ${IMAGE_BASE}:${SHORT_SHA}
+
+          # 保存镜像名（latest）供部署步骤使用，同时保存 SHA 标签供日志
+          echo "IMAGE_NAME=${IMAGE_BASE}:latest" >> $GITHUB_ENV
+          echo "IMAGE_SHA_TAG=${SHORT_SHA}" >> $GITHUB_ENV
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "正在部署版本: ${{ env.IMAGE_SHA_TAG }}"
+            docker pull ${{ env.IMAGE_NAME }}
+            docker rm -f my-app || true
+            docker run -d --name my-app -p 3000:3000 --restart unless-stopped ${{ env.IMAGE_NAME }}
+            echo "部署完成，版本: ${{ env.IMAGE_SHA_TAG }}"

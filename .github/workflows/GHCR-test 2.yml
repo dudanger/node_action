@@ -43,7 +43,8 @@ jobs:
             set -e
             echo "登录成功，开始部署..."
             docker pull ${{ env.IMAGE_NAME }}
-            docker stop my-app || true
-            docker rm my-app || true
+            #docker stop my-app || true
+            #docker rm my-app || true
+            docker rm -f my-app || true   
             docker run -d --name my-app -p 3000:3000 --restart unless-stopped ${{ env.IMAGE_NAME }}
             echo "部署完成"
