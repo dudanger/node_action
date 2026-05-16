@@ -9,6 +9,8 @@ COPY package*.json ./
 
 # 安装依赖
 RUN npm ci --only=production
+RUN npm install -g pnpm
+RUN npm install -g pm2
 
 # 复制项目所有文件
 COPY . .
@@ -18,4 +20,6 @@ EXPOSE 3000
 
 # 启动应用
 # 确保 test1.js 是你的入口文件
-CMD ["node", "test1.js"]
+
+#CMD ["node", "test1.js"]
+CMD ["pm2-runtime", "start", "test1.js", "--name", "node-action"]
