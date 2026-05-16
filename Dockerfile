@@ -11,6 +11,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 RUN npm install -g pnpm
 RUN npm install -g pm2
+RUN npm install express
 
 # 复制项目所有文件
 COPY . .
